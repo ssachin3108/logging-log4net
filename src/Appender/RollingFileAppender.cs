@@ -622,15 +622,23 @@ namespace log4net.Appender
 				}
 #endif
 				if (m_rollDate)
-				{
+				{   
 					DateTime n = m_dateTime.Now;
 					if (n >= m_nextCheck)
 					{
 						m_now = n;
 						m_nextCheck = NextCheckDate(m_now, m_rollPoint);
 
-						RollOverTime(true);
-					}
+                        if (!FileExists(m_scheduledFilename))
+                        {
+                            RollOverTime(true);
+                        }
+                        else
+                        {
+                            //As we are skiping rollOver, we need to pupulate new scheduled name
+                            m_scheduledFilename = CombinePath(File, m_now.ToString(m_datePattern, System.Globalization.DateTimeFormatInfo.InvariantInfo));
+                        }
+                    }
 				}
 
 				if (m_rollSize)
